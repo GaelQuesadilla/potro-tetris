@@ -12,7 +12,7 @@ class Board:
         self.width = width
         self.height = height
         self.grid = np.zeros((height, width), dtype=int)
-        self.tile_size = c.TILE_SIZE
+        self.block_size = c.BLOCK_SIZE
 
     def is_collision(self, piece: NDArray[np.int_], piece_x: int, piece_y: int) -> bool:
         """Verifica que la pieza tenga colisión
@@ -39,9 +39,12 @@ class Board:
 
                     if (grid_x < 0 or grid_x >= self.width or
                             grid_y >= self.height):
+                        print(
+                            f"La figura se sale del tablero en {grid_x=}, {grid_y=}")
                         return True
 
                     if grid_y >= 0 and self.grid[grid_y, grid_x] != 0:
+                        print(f"Hay colisión en {grid_x=}, {grid_y=}")
                         return True
         return False
 

@@ -18,7 +18,7 @@ class Shape:
             La nueva matriz rotada
         """
 
-        return self.matrix
+        return np.rot90(self.matrix, -1)
 
     def rotate_left(self) -> NDArray[np.int_]:
         """Rota la figura 90º hacia la izquierda
@@ -28,4 +28,4 @@ class Shape:
         NDArray[np.int_]
             La nueva matriz rotada
         """
-        return self.matrix
+        return np.rot90(self.matrix, 1)
