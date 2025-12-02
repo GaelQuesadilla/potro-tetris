@@ -1,0 +1,1 @@
+pyinstaller --windowed --onefile --add-data "assets;assets" main.py --icon "assets/logo.png" 

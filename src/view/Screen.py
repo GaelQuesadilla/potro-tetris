@@ -18,6 +18,9 @@ class Screen:
         self.surface = pygame.display.set_mode((width, height))
         self.fps = fps
 
+        self.logo = pygame.image.load(c.LOGO_DIR)
+        pygame.display.set_icon(self.logo)
+
         pygame.display.set_caption(title)
 
         self.clock = pygame.time.Clock()

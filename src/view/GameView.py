@@ -78,7 +78,7 @@ class GameView:
     def _draw_current_piece(self):
         """Dibuja la pieza actual con borde blanco"""
         piece = self.model.current_piece
-        
+
         for y in range(piece.matrix.shape[0]):
             for x in range(piece.matrix.shape[1]):
                 if piece.matrix[y, x] != 0:
@@ -118,7 +118,7 @@ class GameView:
             f"Nivel: {self.model.level}", True, (255, 255, 255))
         lines_text = c.TEXT_FONT.render(
             f"Lineas: {self.model.lines_cleared}", True, (255, 255, 255))
-        
+
         # Estado de la pieza
         state = self.model.get_piece_state()
         state_text = c.TEXT_FONT.render(
@@ -142,24 +142,45 @@ class GameView:
              c.BLOCK_SIZE * 10))
 
     def _draw_next_piece(self, surface):
-        """Dibuja la siguiente pieza"""
-        next_area = pygame.Rect(
-            c.GAME_WIDTH + 20 + c.BLOCK_SIZE*2, 20 +
-            c.BLOCK_SIZE * 4,                       # Position
-            c.BLOCK_SIZE*4, c.BLOCK_SIZE*4)     # Size
+        """Dibuja la siguiente pieza usando constantes (c) para posición y tamaño."""
+        # Posición de la columna lateral / margen (coherente con _draw_ui)
+        sidebar_x = 20 + c.BLOCK_SIZE * c.GRID_WIDTH + 60
+        sidebar_y = 20 + c.BLOCK_SIZE
+
+        # Área donde se mostrará la pieza siguiente (cuadrado)
+        area_size = c.BLOCK_SIZE * 4  # configurable desde c si cambias BLOCK_SIZE
+        area_x = sidebar_x
+        # colocamos el área justo debajo del título "Pieza siguiente" (ese texto usa y = c.BLOCK_SIZE * 3)
+        area_y = sidebar_y + c.BLOCK_SIZE * 3
+
+        next_area = pygame.Rect(area_x, area_y, area_size, area_size)
+        # fondo y borde del área (mantén coherencia visual con el resto)
         pygame.draw.rect(surface, (0, 0, 0), next_area)
+        pygame.draw.rect(surface, (255, 255, 255), next_area, 1)
 
         piece = self.model.next_piece
-        piece_width = piece.matrix.shape[1] * 20
-        piece_height = piece.matrix.shape[1] * 20
-        start_x = 510 + (200 - piece_width) // 2
-        start_y = 180 + (200 - piece_height) // 2
+        if piece is None:
+            return
 
-        for y in range(piece.matrix.shape[0]):
-            for x in range(piece.matrix.shape[1]):
+        # calculamos el tamaño de celda para que la pieza quepa en el área
+        cols = piece.matrix.shape[1]
+        rows = piece.matrix.shape[0]
+        # cell_size no supera c.BLOCK_SIZE y se adapta a area_size
+        cell_size = min(c.BLOCK_SIZE, max(1, area_size // max(cols, rows)))
+
+        # centrado dentro del cuadro next_area
+        start_x = area_x + (area_size - cols * cell_size) // 2
+        start_y = area_y + (area_size - rows * cell_size) // 2
+
+        # dibujar la pieza (en la superficie principal, con borde blanco como el resto)
+        for y in range(rows):
+            for x in range(cols):
                 if piece.matrix[y, x] != 0:
                     rect = pygame.Rect(
-                        start_x + x * 20, start_y + y * 20, 20, 20)
+                        start_x + x * cell_size,
+                        start_y + y * cell_size,
+                        cell_size, cell_size
+                    )
                     pygame.draw.rect(surface, c.T_COLORS[piece.type_num], rect)
                     pygame.draw.rect(surface, (255, 255, 255), rect, 1)
 
