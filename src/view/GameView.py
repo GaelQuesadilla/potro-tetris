@@ -3,7 +3,7 @@ import sys
 from src.Constants import Constants as c
 from src.view.Screen import Screen
 from typing import Tuple
-from src.model.GameModel import GameModel
+from src.model.GameModel import GameModel, PieceState
 
 from src.controller.AudioController import AudioController
 
@@ -76,8 +76,9 @@ class GameView:
                         (255, 255, 255), rect, 1)
 
     def _draw_current_piece(self):
-        """Dibuja la pieza actual"""
+        """Dibuja la pieza actual con borde blanco"""
         piece = self.model.current_piece
+        
         for y in range(piece.matrix.shape[0]):
             for x in range(piece.matrix.shape[1]):
                 if piece.matrix[y, x] != 0:
@@ -85,9 +86,11 @@ class GameView:
                         (piece.x + x) * c.BLOCK_SIZE,
                         (piece.y + y) * c.BLOCK_SIZE,
                         c.BLOCK_SIZE, c.BLOCK_SIZE)
+                    # Dibujar el bloque con color de la pieza
                     pygame.draw.rect(
                         self.game_surface,
                         c.T_COLORS[piece.type_num], rect)
+                    # Dibujar borde blanco
                     pygame.draw.rect(
                         self.game_surface,
                         (255, 255, 255), rect, 1)
@@ -115,6 +118,11 @@ class GameView:
             f"Nivel: {self.model.level}", True, (255, 255, 255))
         lines_text = c.TEXT_FONT.render(
             f"Lineas: {self.model.lines_cleared}", True, (255, 255, 255))
+        
+        # Estado de la pieza
+        state = self.model.get_piece_state()
+        state_text = c.TEXT_FONT.render(
+            f"Estado: {state.value}", True, (255, 255, 255))
 
         surface.blit(
             score_text,
@@ -128,6 +136,10 @@ class GameView:
             lines_text,
             (c.BLOCK_SIZE * c.GRID_WIDTH+20 + 60 - 2,
              c.BLOCK_SIZE * (c.GRID_HEIGHT - 1)))
+        surface.blit(
+            state_text,
+            (c.BLOCK_SIZE * c.GRID_WIDTH+20 + 60,
+             c.BLOCK_SIZE * 10))
 
     def _draw_next_piece(self, surface):
         """Dibuja la siguiente pieza"""
@@ -139,7 +151,7 @@ class GameView:
 
         piece = self.model.next_piece
         piece_width = piece.matrix.shape[1] * 20
-        piece_height = piece.matrix.shape[0] * 20
+        piece_height = piece.matrix.shape[1] * 20
         start_x = 510 + (200 - piece_width) // 2
         start_y = 180 + (200 - piece_height) // 2
 

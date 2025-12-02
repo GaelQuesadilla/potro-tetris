@@ -1,10 +1,19 @@
 import numpy as np
+from enum import Enum
 from src.model.Board import Board
 from src.model.Tetromino import Tetronimo, Tetronimos, O
 from random import choice
 from typing import Type
 from src.Constants import Constants as c
 from src.controller.AudioController import AudioController
+
+
+class PieceState(Enum):
+    """Estados posibles de una pieza de Tetris"""
+    MOVIENDO = "MOVIENDO"      # Se está moviendo (LEFT/RIGHT)
+    ROTANDO = "ROTANDO"        # Se está rotando (UP)
+    CAYENDO = "CAYENDO"        # Está cayendo automáticamente (TIMER)
+    BLOQUEADO = "BLOQUEADO"    # Fijada en el tablero (SPACE o COLISIÓN)
 
 
 class GameModel:
@@ -22,10 +31,27 @@ class GameModel:
         self.fall_time = 0
         self.audio_controller = audio_controller
 
+        # Estado de la pieza actual
+        self.piece_state = PieceState.CAYENDO
+        self.last_state = PieceState.CAYENDO
+
     def _create_new_piece(self) -> Tetronimo:
         tetronimo = choice(Tetronimos)()
         tetronimo.x = c.GRID_WIDTH // 2 - tetronimo.matrix.shape[1] // 2
         return tetronimo
+
+    def get_piece_state(self) -> PieceState:
+        """
+        Retorna el estado actual de la pieza basado en las condiciones:
+        - MOVIENDO: Se acaba de mover (LEFT/RIGHT)
+        - ROTANDO: Se acaba de rotar (UP)
+        - CAYENDO: Está cayendo automáticamente por timer
+        - BLOQUEADO: Está fijada en el tablero (SPACE o COLISIÓN)
+
+        Returns:
+            PieceState: El estado actual de la pieza
+        """
+        return self.piece_state
 
     def move_piece(self, dx, dy) -> bool:
         """Intenta mover la pieza actual"""
@@ -40,6 +66,10 @@ class GameModel:
             self.current_piece.x += dx
             self.current_piece.y += dy
 
+            # Cambiar estado a MOVIENDO si hay movimiento horizontal
+            if dx != 0:
+                self.piece_state = PieceState.MOVIENDO
+
             print(f"{self.current_piece.y=}")
             return True
         return False
@@ -52,9 +82,13 @@ class GameModel:
         rotated = self.current_piece.get_rotate_left()
         if not self.board.is_collision(rotated, self.current_piece.x, self.current_piece.y):
             self.current_piece.rotate_left()
+            self.piece_state = PieceState.ROTANDO
+            print(
+                f"Rotación exitosa\t{self.current_piece.x=}, {self.current_piece.y=}")
+            return True
+        else:
             print(
                 f"Hay colisión al rotar\t{self.current_piece.x=}, {self.current_piece.y=}")
-            return True
         return False
 
     def hard_drop(self):
@@ -64,6 +98,9 @@ class GameModel:
 
         while self.move_piece(0, 1):
             pass
+
+        # Cambiar estado a BLOQUEADO cuando se fija la pieza
+        self.piece_state = PieceState.BLOQUEADO
         self._lock_piece()
 
     def _lock_piece(self):
@@ -107,7 +144,13 @@ class GameModel:
         self.fall_time += delta_time * 1000  # Convertir a ms
         if self.fall_time >= self.fall_speed:
             self.fall_time = 0
+
+            # Cambiar estado a CAYENDO en cada actualización de caída
+            self.piece_state = PieceState.CAYENDO
+
             if not self.move_piece(0, 1):
+                # Si no puede caer más, cambiar a BLOQUEADO por colisión
+                self.piece_state = PieceState.BLOQUEADO
                 self._lock_piece()
 
         # Actualizar velocidad basada en nivel
@@ -123,3 +166,5 @@ class GameModel:
         self.lines_cleared = 0
         self.game_over = False
         self.fall_time = 0
+        self.piece_state = PieceState.CAYENDO
+        self.last_state = PieceState.CAYENDO
