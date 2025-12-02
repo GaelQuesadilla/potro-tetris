@@ -49,9 +49,9 @@ class GameModel:
         if self.game_over:
             return False
 
-        rotated = self.current_piece.rotate_left()
+        rotated = self.current_piece.get_rotate_left()
         if not self.board.is_collision(rotated, self.current_piece.x, self.current_piece.y):
-            self.current_piece.matrix = rotated
+            self.current_piece.rotate_left()
             print(
                 f"Hay colisión al rotar\t{self.current_piece.x=}, {self.current_piece.y=}")
             return True
