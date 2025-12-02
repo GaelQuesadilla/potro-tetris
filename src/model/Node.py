@@ -39,7 +39,7 @@ class Node(Generic[T]):
 
 
 @dataclass
-class CNode(Node):
+class CNode(Node, Generic[T]):
     """Clase que representa un el nodo de un grafo que siempre será circular"""
     value: T
     left: Node[T]

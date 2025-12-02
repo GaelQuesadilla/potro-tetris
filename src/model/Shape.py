@@ -1,18 +1,18 @@
 import numpy as np
 from numpy.typing import NDArray
 from dataclasses import dataclass
-from src.model.Node import Node
+from src.model.Node import Node, CNode
 
 
 class Shape:
     """Clase genérica de figura"""
 
-    node: Node[NDArray[np.int_]]
+    node: CNode[NDArray[np.int_]]
 
     def __init__(self, matrix: NDArray[np.int_]):
         # ? Creamos un nodo
         # ? Creamos un nodo y nos colocamos ahí
-        self.node = Node(value=matrix)
+        self.node = CNode(value=matrix)
 
         # ? Creamos los nodos vecinos
         self.node.connect_right(value=np.rot90(matrix, -1))

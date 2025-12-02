@@ -34,7 +34,7 @@ class I(Tetronimo):
     def __init__(self):
         matrix = np.array([
             [1, 1, 1, 1]
-        ], dtype=np.int_)
+        ], dtype=np.int8)
         super().__init__(matrix, type_num=1)
 
 
@@ -43,7 +43,7 @@ class O(Tetronimo):
         matrix = np.array([
             [1, 1],
             [1, 1]
-        ], dtype=np.int_)
+        ], dtype=np.int8)
         super().__init__(matrix, type_num=2)
 
 
@@ -52,7 +52,7 @@ class T(Tetronimo):
         matrix = np.array([
             [0, 1, 0],
             [1, 1, 1]
-        ], dtype=np.int_)
+        ], dtype=np.int8)
         super().__init__(matrix, type_num=3)
 
 
@@ -61,7 +61,7 @@ class S(Tetronimo):
         matrix = np.array([
             [0, 1, 1],
             [1, 1, 0]
-        ], dtype=np.int_)
+        ], dtype=np.int8)
         super().__init__(matrix, type_num=4)
 
 
@@ -70,7 +70,7 @@ class Z(Tetronimo):
         matrix = np.array([
             [1, 1, 0],
             [0, 1, 1]
-        ], dtype=np.int_)
+        ], dtype=np.int8)
         super().__init__(matrix, type_num=5)
 
 
@@ -79,7 +79,7 @@ class J(Tetronimo):
         matrix = np.array([
             [1, 0, 0],
             [1, 1, 1]
-        ], dtype=np.int_)
+        ], dtype=np.int8)
         super().__init__(matrix, type_num=6)
 
 
@@ -88,7 +88,7 @@ class L(Tetronimo):
         matrix = np.array([
             [0, 0, 1],
             [1, 1, 1]
-        ], dtype=np.int_)
+        ], dtype=np.int8)
         super().__init__(matrix, type_num=7)
 
 

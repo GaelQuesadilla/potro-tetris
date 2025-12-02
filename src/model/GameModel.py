@@ -2,7 +2,7 @@ import numpy as np
 from enum import Enum
 from src.model.Board import Board
 from src.model.Tetromino import Tetronimo, Tetronimos, O
-from random import choice
+from random import shuffle
 from typing import Type
 from src.Constants import Constants as c
 from src.controller.AudioController import AudioController
@@ -21,6 +21,8 @@ class GameModel:
 
     def __init__(self, audio_controller: AudioController = None):
         self.board = Board()
+        self.bag = []
+        self._refill_bag()
         self.current_piece = self._create_new_piece()
         self.next_piece = self._create_new_piece()
         self.score = 0
@@ -35,8 +37,15 @@ class GameModel:
         self.piece_state = PieceState.CAYENDO
         self.last_state = PieceState.CAYENDO
 
+    def _refill_bag(self):
+        """Rellena la cola de Tetronimos"""
+        self.bag = Tetronimos.copy()
+        shuffle(self.bag)
+
     def _create_new_piece(self) -> Tetronimo:
-        tetronimo = choice(Tetronimos)()
+        if len(self.bag) == 0:
+            self._refill_bag()
+        tetronimo = self.bag.pop()()
         tetronimo.x = c.GRID_WIDTH // 2 - tetronimo.matrix.shape[1] // 2
         return tetronimo
 
